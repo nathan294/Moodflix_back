@@ -11,6 +11,6 @@ alembic upgrade head   _pour appliquer les migrations sur la base de données_
 
 # Lancer le docker pour le dev en local
 
-cd .dev/moodflix && docker compose --env-file docker.env up
+docker-compose --env-file .dev/moodflix/docker.env -f .dev/moodflix/docker-compose.yml up
 
 _you can add --build or --force-recreate to rebuild or force recreate_

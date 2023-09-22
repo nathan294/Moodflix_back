@@ -21,15 +21,16 @@ services:
     networks:
       - moodflix
   pgdb15:
-    container_name: pgdb15_moodflix
+    container_name: moodflix_pgdb15
     image: postgres:15
     restart: unless-stopped
     volumes:
       - type: volume
         source: postgres15-data
         target: "/var/lib/postgresql/data"
+
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
