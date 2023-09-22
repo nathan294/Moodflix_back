@@ -21,6 +21,13 @@ isort = "^5.12.0"
 pytest = "^7.4.2"
 pre-commit = "^3.4.0"
 
+[tool.ruff]
+line-length = 120 # Same as Black.
+
+[tool.black]
+line-length = 120 # Same as Ruff.
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
