@@ -1,0 +1,45 @@
+version: "3.2"
+
+services:
+
+  base-api:
+    env_file:
+      - app.env
+    environment:
+      EXEMPLE: ${EXEMPLE}
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${PYTHON_VERSION}
+        UID: ${UID}
+    volumes:
+      - ../..:/app/workspace
+    command: /bin/bash /app/workspace/.dev/init.sh
+    ports:
+      - "${APP_PORT}:8000"
+    networks:
+      - moodflix
+  pgdb15:
+    container_name: pgdb15_moodflix
+    image: postgres:15
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: postgres15-data
+        target: "/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "${PGDB15_PORT}:5432"
+    networks:
+      - moodflix
+
+networks:
+  moodflix:
+    name: moodflix
+
+volumes:
+  postgres15-data:
