@@ -87,9 +87,9 @@ jobs:
 
       - name: Stop existing container (migrations)
         run: |
-          ssh VM "if sudo docker ps -a | grep -q 'alembic_stage'; then
-            sudo docker stop alembic_stage || true
-            sudo docker rm alembic_stage || true
+          ssh VM "if sudo docker ps -a | grep -q 'moodflix_alembic_stage'; then
+            sudo docker stop moodflix_alembic_stage || true
+            sudo docker rm moodflix_alembic_stage || true
           fi"
 
       - name: Create .env file
@@ -109,7 +109,7 @@ jobs:
 
       - name: Run migrations
         run: |
-          ssh VM "sudo docker run --env-file stage.env --name alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
+          ssh VM "sudo docker run --env-file stage.env --name moodflix_alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
 
       - name: Run Docker with the image we just pulled
         run: |
