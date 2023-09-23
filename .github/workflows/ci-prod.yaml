@@ -109,8 +109,8 @@ jobs:
 
       - name: Run migrations
         run: |
-          ssh VM "sudo docker run --env-file main.env --name moodflix_alembic_prod ghcr.io/nathan294/moodflix_back:main alembic upgrade head"
+          ssh VM "sudo docker run --env-file moodflix_main.env --name moodflix_alembic_prod ghcr.io/nathan294/moodflix_back:main alembic upgrade head"
 
       - name: Run Docker with the image we just pulled
         run: |
-          ssh VM "sudo docker run -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} --name moodflix_back_container_prod --env-file main.env -d ghcr.io/nathan294/moodflix_back:main uvicorn api.main:app --host 0.0.0.0 --port ${{ secrets.APP_PORT }}"
+          ssh VM "sudo docker run -p ${{ secrets.APP_PORT }}:${{ secrets.APP_PORT }} --name moodflix_back_container_prod --env-file moodflix_main.env -d ghcr.io/nathan294/moodflix_back:main uvicorn api.main:app --host 0.0.0.0 --port ${{ secrets.APP_PORT }}"

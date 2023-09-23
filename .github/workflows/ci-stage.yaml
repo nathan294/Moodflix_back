@@ -109,8 +109,8 @@ jobs:
 
       - name: Run migrations
         run: |
-          ssh VM "sudo docker run --env-file stage.env --name moodflix_alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
+          ssh VM "sudo docker run --env-file moodflix_stage.env --name moodflix_alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
 
       - name: Run Docker with the image we just pulled
         run: |
-          ssh VM "sudo docker run -p ${{ secrets.APP_PORT_STG }}:${{ secrets.APP_PORT_STG }} --name moodflix_back_container_stage --env-file stage.env -d ghcr.io/nathan294/moodflix_back:stage uvicorn api.main:app --host 0.0.0.0 --port ${{ secrets.APP_PORT_STG }}"
+          ssh VM "sudo docker run -p ${{ secrets.APP_PORT_STG }}:${{ secrets.APP_PORT_STG }} --name moodflix_back_container_stage --env-file moodflix_stage.env -d ghcr.io/nathan294/moodflix_back:stage uvicorn api.main:app --host 0.0.0.0 --port ${{ secrets.APP_PORT_STG }}"
