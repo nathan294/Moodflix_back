@@ -103,7 +103,7 @@ jobs:
 
       - name: Copy .env to VM
         run: |
-          scp .env VM:~/main.env
+          scp .env VM:~/moodflix_main.env
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
