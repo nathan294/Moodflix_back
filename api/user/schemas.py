@@ -1,11 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
-from api.schemas.commons import TimeModel, UUIdentifiedModel
+from api.commons.schemas_commons import TimeModel, UUIdentifiedModel
 
 
 class UserBase(BaseModel):
     email: str
-    password: str
     firebase_id: str
 
 
@@ -14,8 +13,9 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: str
-    password: str | None = None
+    email: str | None = None
+    user_id: str
+    # password: str | None = None
 
 
 class User(UserBase, TimeModel, UUIdentifiedModel):

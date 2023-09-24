@@ -7,5 +7,5 @@ class User(UUIdentifiedObject, TimedObject):
     __tablename__ = "user"
 
     email: str = Column(String, nullable=False, unique=True)
-    password: str = Column(String, nullable=False, unique=True)
+    # password: str = Column(String, nullable=False, unique=True)
     firebase_id: str = Column(String, nullable=False, unique=True)
