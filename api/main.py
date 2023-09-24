@@ -2,17 +2,17 @@ from fastapi import FastAPI
 
 from api.database import engine
 from api.models import Base
+from api.settings import settings
 
 # Routers
-from api.routers import user
-from api.settings import settings
+from api.user.router import router as user_router
 
 description = """
 _Description in progress_ 🚀
 """
 
 app = FastAPI(title="API de Moodflix", description=description)
-app.include_router(user.router)
+app.include_router(user_router)
 Base.metadata.create_all(bind=engine)
 
 
@@ -35,4 +35,5 @@ def tester_la_securite():
 if __name__ == "__main__":
     import uvicorn
 
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, log_level="debug", reload="true")
     uvicorn.run("main:app", host="0.0.0.0", port=8080, log_level="debug", reload="true")
