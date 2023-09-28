@@ -15,6 +15,7 @@ services:
         UID: ${UID}
     volumes:
       - ../..:/app/workspace
+      - ~/.ssh:/root/.ssh
     command: /bin/bash /app/workspace/.dev/init.sh
     ports:
       - "${APP_PORT}:8000"
