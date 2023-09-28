@@ -1,4 +1,4 @@
-# Moodflix API
+# Moodflix API (En cours de dev)
 
 # Générer les migrations de base de données
 
