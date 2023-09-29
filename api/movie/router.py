@@ -43,6 +43,7 @@ async def bulk_create_movie(movies: List[sch.MovieCreate], db: Session = Depends
             index_elements=["id"],  # conflict target
             set_=dict(
                 title=insert_stmt.excluded.title,
+                overview=insert_stmt.excluded.overview,
                 popularity=insert_stmt.excluded.popularity,
                 vote_average=insert_stmt.excluded.vote_average,
                 vote_count=insert_stmt.excluded.vote_count,
@@ -65,6 +66,7 @@ async def search_movie(title: str, db: Session = Depends(get_db)):
     """
     Get list of closest movies, by movie title
     """
+    image_tmdb_route = "https://image.tmdb.org/t/p/original"
     api_key = "377e1f30f7462ca340230ce50a56d71b"
     url = (
         f"https://api.themoviedb.org/3/search/movie?query={title}&api_key={api_key}&include_adult=false&language=fr-FR"
@@ -87,8 +89,8 @@ async def search_movie(title: str, db: Session = Depends(get_db)):
                     original_language=movie_data.get("original_language"),
                     original_title=movie_data.get("original_title"),
                     overview=movie_data.get("overview"),
-                    poster_path=movie_data.get("poster_path"),
-                    backdrop_path=movie_data.get("backdrop_path"),
+                    poster_path=image_tmdb_route + movie_data.get("poster_path"),
+                    backdrop_path=image_tmdb_route + movie_data.get("backdrop_path"),
                     release_date=movie_data.get("release_date"),
                     release_year=None,
                     popularity=movie_data.get("popularity"),
