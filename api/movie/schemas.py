@@ -1,6 +1,9 @@
 from datetime import date
+from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from api.commons.schemas_commons import TimeModel
 
 
 class MovieCreate(BaseModel):
@@ -17,3 +20,14 @@ class MovieCreate(BaseModel):
     popularity: float | None
     vote_average: float | None
     vote_count: int | None
+
+
+class MovieGenre(TimeModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GenreIds(BaseModel):
+    ids: List[int] | None

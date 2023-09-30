@@ -29,3 +29,6 @@ __pypackages__/
 
 # Ruff cache
 .ruff_cache
+
+# Test notebooks
+notebooks/
