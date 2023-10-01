@@ -10,15 +10,17 @@ import api.movie.schemas as sch
 def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
     image_tmdb_route = "https://image.tmdb.org/t/p/original"
     api_key = "377e1f30f7462ca340230ce50a56d71b"
-    url = (
-        f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={api_key}&include_adult=false&language=fr-FR"
-    )
     headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        response_content = response.content.decode("utf-8")  # Explicitly decode as UTF-8
-        data = json.loads(response_content)
-        movies_data = data.get("results", [])
+    all_movies_data = []
+
+    for page in [1, 2]:
+        url = f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={api_key}&include_adult=false&language=fr-FR&page={page}"
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            response_content = response.content.decode("utf-8")  # Explicitly decode as UTF-8
+            data = json.loads(response_content)
+            movies_data = data.get("results", [])
+            all_movies_data.extend(movies_data)  # Concatenate the results
 
         # Create a list of MovieCreate objects and set release_year field
         movies = []
