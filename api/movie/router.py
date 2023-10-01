@@ -41,4 +41,7 @@ async def sync_movie_genres(db: Session = Depends(get_db)):
 
 @router.post("/get_genre_name", response_model=List[str])
 async def get_genre_names(genre_ids: sch.GenreIds, db: Session = Depends(get_db)):
+    """
+    Retrieve movie genre names from database
+    """
     return get_genre_names_from_database(genre_ids=genre_ids, db=db)
