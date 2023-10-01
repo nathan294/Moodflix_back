@@ -1,8 +1,9 @@
 from datetime import date
 
-from sqlalchemy import ARRAY, Column, Date, Double, Integer, String
+from sqlalchemy import ARRAY, Column, Date, Double, Enum, Integer, String
 
 from api.models.commons import TimedObject
+from api.movie.schemas import MovieType
 
 
 class Movie(TimedObject):
@@ -10,6 +11,7 @@ class Movie(TimedObject):
 
     id: int = Column(Integer, nullable=False, unique=True, primary_key=True)
     title: str = Column(String, nullable=False)
+    type: str = Column(Enum(MovieType, native_enum=False), nullable=False)
     genre_ids: list = Column(ARRAY(Integer), nullable=True)
     original_language: str = Column(String, nullable=True)
     original_title: str = Column(String, nullable=True)

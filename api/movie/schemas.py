@@ -1,4 +1,5 @@
 from datetime import date
+from enum import Enum
 from typing import List
 
 from pydantic import BaseModel, ConfigDict
@@ -6,8 +7,14 @@ from pydantic import BaseModel, ConfigDict
 from api.commons.schemas_commons import TimeModel
 
 
+class MovieType(Enum):
+    movie = "movie"
+    tv = "tv"
+
+
 class MovieCreate(BaseModel):
     id: int
+    type: MovieType
     title: str
     genre_ids: list | None
     original_language: str | None
