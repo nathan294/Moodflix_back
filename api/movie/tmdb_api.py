@@ -24,9 +24,6 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
         movies = []
         for movie_data in movies_data:
             try:
-                if movie_data.get("media_type") == "person":
-                    continue  # Skip this row and continue with the next one
-
                 # Movies & TV Show response differ
                 release_date = movie_data.get("release_date") or movie_data.get("first_air_date")
                 title = movie_data.get("title") or movie_data.get("name")
@@ -35,23 +32,24 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
                 # Convert empty string to None
                 release_date = None if release_date == "" else release_date
 
+                media_type = movie_data.get("media_type")
+                poster_path = movie_data.get("poster_path")
+                backdrop_path = movie_data.get("backdrop_path")
+                if media_type == "person" or any(x is None for x in [poster_path, backdrop_path, title, release_date]):
+                    continue  # Skip this row and continue with the next one
+
                 # Create a pydantic Movie from the response
-                # Add None if there is no poster_path or backdrop_path
                 if title is not None and release_date is not None:
                     movie = sch.MovieCreate(
                         id=movie_data.get("id"),
                         title=title,
-                        type=movie_data.get("media_type"),
+                        type=media_type,
                         genre_ids=movie_data.get("genre_ids"),
                         original_language=movie_data.get("original_language"),
                         original_title=original_title,
                         overview=movie_data.get("overview"),
-                        poster_path=(image_tmdb_route + movie_data.get("poster_path"))
-                        if movie_data.get("poster_path")
-                        else None,
-                        backdrop_path=(image_tmdb_route + movie_data.get("backdrop_path"))
-                        if movie_data.get("backdrop_path")
-                        else None,
+                        poster_path=(image_tmdb_route + poster_path),
+                        backdrop_path=(image_tmdb_route + backdrop_path),
                         release_date=release_date,
                         release_year=None,
                         popularity=movie_data.get("popularity"),
@@ -59,8 +57,7 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
                         vote_count=movie_data.get("vote_count"),
                     )
                     # Extract year from release_date and set it to release_year
-                    if movie.release_date:
-                        movie.release_year = movie.release_date.year
+                    movie.release_year = movie.release_date.year
                     movies.append(movie)
             except Exception as e:
                 print(f"An error occurred while processing a movie: {e}")
