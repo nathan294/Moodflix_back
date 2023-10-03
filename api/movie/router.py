@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 
 import api.movie.schemas as sch
 from api.commons.dependencies import get_db
+from api.movie.data_processing import concatenate_genres
 from api.movie.get_database import get_genre_names_from_database
-from api.movie.post_database import insert_movies_in_database, sync_tmdb_genres_with_database
-from api.movie.tmdb_api import search_movie_in_tmdb_api
+from api.movie.post_database import insert_genres_in_database, insert_movies_in_database
+from api.movie.tmdb_api import get_genres_from_tmdb, search_movie_in_tmdb_api
 
 router = APIRouter(
     prefix="/movie",
@@ -36,7 +37,11 @@ async def sync_movie_genres(db: Session = Depends(get_db)):
     """
     Synchronise database with genres found in TMDB Database
     """
-    return sync_tmdb_genres_with_database(db)
+    movie_genres = get_genres_from_tmdb("movie")
+    tv_genres = get_genres_from_tmdb("tv")
+    concatenated_genres = concatenate_genres(movie_genres, tv_genres)
+
+    return insert_genres_in_database(concatenated_genres, db)
 
 
 @router.post("/get_genre_name", response_model=List[str])

@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Dict, List
 
 import requests
 from fastapi import HTTPException
@@ -8,6 +8,9 @@ import api.movie.schemas as sch
 
 
 def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
+    """
+    Search for movie in TMDB API, return a list of movies
+    """
     image_tmdb_route = "https://image.tmdb.org/t/p/original"
     api_key = "377e1f30f7462ca340230ce50a56d71b"
     headers = {"accept": "application/json"}
@@ -68,3 +71,20 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
         return movies
     else:
         return HTTPException(400, "Une erreur est survenue lors de la récupération des films")
+
+
+def get_genres_from_tmdb(media_type: str) -> List[Dict]:
+    """
+    Get genres id & names from TMDB API
+    """
+    api_key = "377e1f30f7462ca340230ce50a56d71b"
+    url = f"https://api.themoviedb.org/3/genre/{media_type}/list?api_key={api_key}&language=fr-FR"
+    headers = {"accept": "application/json"}
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        response_content = response.content.decode("utf-8")
+        data = json.loads(response_content)
+        genres = data.get("genres", [])
+        return genres
+    else:
+        return []
