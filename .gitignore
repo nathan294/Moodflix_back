@@ -7,7 +7,7 @@ __pycache__/
 .ipynb_checkpoints
 
 # VSCode settings
-.vscode
+.vscode/settings.json
 
 # IPython
 profile_default/
