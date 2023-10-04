@@ -1,7 +1,5 @@
-import json
 from typing import List
 
-import requests
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -11,6 +9,9 @@ from api.models.movie_genre import MovieGenre
 
 
 def insert_movies_in_database(movies: List[sch.MovieCreate], db: Session) -> bool:
+    """
+    Insert movies into database
+    """
     try:
         # Filter out movies with a None title
         valid_movies = [movie for movie in movies if movie.title is not None]
@@ -48,16 +49,11 @@ def insert_movies_in_database(movies: List[sch.MovieCreate], db: Session) -> boo
         return False
 
 
-def sync_tmdb_genres_with_database(db: Session):
-    api_key = "377e1f30f7462ca340230ce50a56d71b"
-    url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}&language=fr-FR/"
-    headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        response_content = response.content.decode("utf-8")
-        data = json.loads(response_content)
-        genres = data.get("genres", [])
-
+def insert_genres_in_database(genres: dict, db: Session) -> bool:
+    """
+    Insert DMDB genre names into database
+    """
+    try:
         # Create an insert statement for the Movie table
         insert_stmt = insert(MovieGenre)
 
@@ -73,4 +69,7 @@ def sync_tmdb_genres_with_database(db: Session):
         db.execute(final_stmt, genres)
         db.commit()
         return True
-    return False
+
+    except Exception as e:
+        print(e)
+        return False

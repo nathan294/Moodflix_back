@@ -2,9 +2,9 @@
 
 cd /app
 
-poetry install --with dev
-poetry run pre-commit install -f --hook-type pre-commit
-poetry run pre-commit autoupdate
+poetry shell
+poetry install --with dev --no-interaction
+poetry run pre-commit install
 
 echo "###### READY TO ROCK !"
 sleep infinity

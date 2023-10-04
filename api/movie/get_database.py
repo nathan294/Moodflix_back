@@ -7,6 +7,9 @@ from api.models.movie_genre import MovieGenre
 
 
 def get_genre_names_from_database(genre_ids, db: Session) -> List[str]:
+    """
+    Retrieve genre names from database
+    """
     ids = genre_ids.ids
     if not ids:
         return ["Genre inconnu"]

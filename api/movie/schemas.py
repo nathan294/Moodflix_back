@@ -12,6 +12,13 @@ class MovieType(Enum):
     tv = "tv"
 
 
+class WantedList(Enum):
+    popular = "popular"
+    top_rated = "top_rated"
+    now_playing = "now_playing"
+    upcoming = "upcoming"
+
+
 class MovieCreate(BaseModel):
     id: int
     type: MovieType
@@ -38,3 +45,9 @@ class MovieGenre(TimeModel):
 
 class GenreIds(BaseModel):
     ids: List[int] | None
+
+
+class HomePageMovies(BaseModel):
+    popular: List[MovieCreate]
+    now_playing: List[MovieCreate]
+    upcoming: List[MovieCreate]
