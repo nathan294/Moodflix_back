@@ -34,7 +34,7 @@ async def create_user(user: sch.UserCreate, db: Session = Depends(get_db)):
     stmt = select(mdl.User).filter_by(email=f"{user.email}")
     db_user = db.scalar(stmt)
     if db_user:
-        raise HTTPException(status_code=400, detail="User already registered")
+        raise HTTPException(status_code=409, detail="User already registered")
     db_user = mdl.User(email=user.email, firebase_id=user.firebase_id)
     db.add(db_user)
     db.commit()
