@@ -23,8 +23,11 @@ def insert_movies_in_database(movies: List[sch.MovieCreate], db: Session) -> boo
         # Create a list of Movie dictionaries from the provided data
         db_movies = [movie.model_dump() for movie in valid_movies]
 
+        # Remove duplicates based on 'id'
+        unique_movies = list({movie["id"]: movie for movie in db_movies}.values())
+
         # Create an insert statement for the Movie table
-        insert_stmt = insert(Movie).values(db_movies)
+        insert_stmt = insert(Movie).values(unique_movies)
 
         # Add the on conflict do update clause
         final_stmt = insert_stmt.on_conflict_do_update(
