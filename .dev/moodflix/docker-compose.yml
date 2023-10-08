@@ -5,6 +5,7 @@ services:
   base-api:
     env_file:
       - app.env
+      - docker.env
     environment:
       EXEMPLE: ${EXEMPLE}
     build:
@@ -14,10 +15,11 @@ services:
         VERSION: ${PYTHON_VERSION}
         UID: ${UID}
     volumes:
-      - ../..:/app/workspace
-    command: /bin/bash /app/workspace/.dev/init.sh
+      - ../..:/app
+      - ~/.ssh:/root/.ssh
+    command: /bin/bash /app/.dev/init.sh
     ports:
-      - "${APP_PORT}:8000"
+      - "${APP_PORT}:${APP_PORT}"
     networks:
       - moodflix
   pgdb15:

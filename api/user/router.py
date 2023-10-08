@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 import api.models as mdl
-import api.schemas as sch
-from api.dependencies import get_db
+import api.user.schemas as sch
+from api.commons.dependencies import get_db
 
 router = APIRouter(
     prefix="/user",
@@ -29,13 +29,13 @@ async def read_user(user_id: UUID, db: Session = Depends(get_db)):
 @router.post("/", response_model=sch.User)
 async def create_user(user: sch.UserCreate, db: Session = Depends(get_db)):
     """
-    Create a user with email, password and firebase_id
+    Create a user with email and firebase_id
     """
     stmt = select(mdl.User).filter_by(email=f"{user.email}")
     db_user = db.scalar(stmt)
     if db_user:
-        raise HTTPException(status_code=400, detail="User already registered")
-    db_user = mdl.User(email=user.email, password=user.password, firebase_id=user.firebase_id)
+        raise HTTPException(status_code=409, detail="User already registered")
+    db_user = mdl.User(email=user.email, firebase_id=user.firebase_id)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -43,15 +43,17 @@ async def create_user(user: sch.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/", response_model=sch.User)
-async def update_user_password(user: sch.UserUpdate, db: Session = Depends(get_db)):
+async def update_user_email(user: sch.UserUpdate, db: Session = Depends(get_db)):
     """
-    Update a user password
+    Update a user email based on his user_id
     """
-    stmt = select(mdl.User).filter_by(email=user.email)
+    stmt = select(mdl.User).filter_by(user_id=user.user_id)
     db_user = db.scalar(stmt)
-    if user.password is None:
+    if db_user is None:
+        return HTTPException(404, "User not found")
+    if user.email is None:
         return sch.User.model_validate(db_user)
-    db_user.password = user.password
+    db_user.email = user.email
     db.commit()
     db.refresh(db_user)
     return sch.User.model_validate(db_user)
