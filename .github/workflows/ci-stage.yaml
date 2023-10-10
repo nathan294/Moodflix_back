@@ -10,15 +10,13 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   VM_HOST: ${{ secrets.VM_HOST }}
-  GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
-  GHCR_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
   DB_USER: ${{ secrets.DB_USER_STG }}
   DB_PASS: ${{ secrets.DB_PASS_STG }}
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_PORT: ${{ secrets.DB_PORT }}
   DB_NAME: ${{ secrets.DB_NAME_STG }}
   APP_PORT: ${{ secrets.APP_PORT_STG }}
-  FIREBASE_API_KEY: ${{ secrets.APP_PORT_STG }}
+  FIREBASE_API_KEY: ${{ secrets.FIREBASE_STG_API_KEY }}
   FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_STG_CREDENTIALS }}
 
 jobs:
@@ -38,7 +36,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: $CONTAINER_REGISTRY_TOKEN
+          password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -74,7 +72,7 @@ jobs:
 
       - name: Connect to Container Registry
         run: |
-          ssh VM "echo $CONTAINER_REGISTRY_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin"
+          ssh VM "echo ${{ secrets.CONTAINER_REGISTRY_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin"
 
       - name: Pull image from Container Registry
         run: |
