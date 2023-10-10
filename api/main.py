@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from api.database import engine
-from api.models import Base
+# from api.database import engine
+# from api.models import Base
 from api.movie.router import router as movie_router
 
 # Routers
@@ -17,7 +17,7 @@ _Description in progress_ 🚀
 app = FastAPI(title="API de Moodflix", description=description)
 app.include_router(user_router)
 app.include_router(movie_router)
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
