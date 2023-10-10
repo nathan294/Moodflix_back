@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 import api.models as mdl
 import api.user.schemas as sch
-from api.commons.dependencies import get_db
+from api.commons.dependencies import get_db, verify_firebase_token
 
 router = APIRouter(
     prefix="/user",
@@ -14,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{user_id}", response_model=sch.User)
+@router.get("/id/{user_id}", response_model=sch.User)
 async def read_user(user_id: UUID, db: Session = Depends(get_db)):
     """
     Get a user based on his user_id
@@ -59,7 +59,7 @@ async def update_user_email(user: sch.UserUpdate, db: Session = Depends(get_db))
     return sch.User.model_validate(db_user)
 
 
-@router.delete("/{user_id}", response_model=bool)
+@router.delete("/id/{user_id}", response_model=bool)
 async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     """
     Delete a user based on his user_id
@@ -68,3 +68,10 @@ async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
     db.query(mdl.User).filter_by(id=user_id).delete()
     db.commit()
     return True
+
+
+@router.get("/me")
+async def current_user(uid: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+    db_user = db.get(mdl.User, uid)
+    print(db_user.email)
+    return uid
