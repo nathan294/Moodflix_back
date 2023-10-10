@@ -16,7 +16,7 @@ env:
   DB_PORT: ${{ secrets.DB_PORT }}
   DB_NAME: ${{ secrets.DB_NAME_STG }}
   APP_PORT: ${{ secrets.APP_PORT_STG }}
-  FIREBASE_API_KEY: ${{ secrets.APP_PORT_STG }}
+  FIREBASE_API_KEY: ${{ secrets.FIREBASE_STG_API_KEY }}
   FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_STG_CREDENTIALS }}
 
 jobs:
