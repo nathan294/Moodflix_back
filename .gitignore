@@ -32,3 +32,6 @@ __pypackages__/
 
 # Test notebooks
 notebooks/
+
+# Google Credentials
+firebase_credentials.json
