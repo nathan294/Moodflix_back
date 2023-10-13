@@ -1,7 +1,8 @@
 from enum import Enum
 
-from sqlalchemy import Boolean, Column, ForeignKey, String
+from sqlalchemy import Boolean, Column
 from sqlalchemy import Enum as SQLAlchemyEnum
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from api.models.commons import TimedObject, UUIdentifiedObject
@@ -30,3 +31,6 @@ class MovieList(UUIdentifiedObject, TimedObject):
 
     # Relationship to User model
     user = relationship("User", back_populates="movie_lists")
+
+    # Relationship to Movies
+    movie_list_associations = relationship("MovieListAssociation", back_populates="movie_list")
