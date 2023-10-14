@@ -12,7 +12,8 @@ def get_db():
         db.close()
 
 
-def verify_firebase_token(id_token: str = Header(...)) -> str:
+def verify_firebase_token(Authorization: str = Header(...)) -> str:
+    id_token = Authorization.replace("Bearer ", "")
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.

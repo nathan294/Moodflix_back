@@ -1,5 +1,6 @@
 import firebase_admin
 from fastapi import FastAPI
+from fastapi.security import HTTPBearer
 from firebase_admin import credentials
 
 from api.admin.router import router as admin_router
@@ -22,6 +23,7 @@ app = FastAPI(
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
 )
+security = HTTPBearer()
 
 
 @app.on_event("startup")

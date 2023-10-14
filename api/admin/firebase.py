@@ -22,6 +22,3 @@ def delete_firebase_user(firebase_id: str) -> None:
         print(f"User with Firebase ID {firebase_id} not found")
     except Exception as e:
         print(f"An error occurred: {e}")
-        print(f"An error occurred: {e}")
-        print(f"An error occurred: {e}")
-        print(f"An error occurred: {e}")

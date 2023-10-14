@@ -14,6 +14,15 @@ router = APIRouter(
 
 @router.get("/get_custom_token")
 def get_custom_token(user_id: str = "aeANvF2kQoQVUT3GK7biyV1MtFf2"):
+    """Generate a JWT Token used for other API Endpoints.
+
+    Firebase user IDs : \n
+    Dev :
+    * WFZAwoPeBgVzf8FEgrG0YR3BA922
+
+    Stage :
+    * EvX8Oou45UXR5j5M1AaxGrlnnHy2
+    """
     custom_token = auth.create_custom_token(user_id)
     token = exchange_custom_token_for_id_token(custom_token.decode())
     return token
