@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 import api.movie.schemas as sch
-from api.commons.dependencies import get_db
+from api.commons.dependencies import get_db, verify_firebase_token
 from api.movie.data_processing import concatenate_genres, concatenate_home_lists
-from api.movie.get_database import get_genre_names_from_database
+from api.movie.get_database import get_genre_names_from_database, get_movie_interactions_with_user
 from api.movie.post_database import insert_genres_in_database, insert_movies_in_database
 from api.movie.tmdb_api import get_genres_from_tmdb, get_list_from_tmdb, search_movie_in_tmdb_api
 
@@ -77,3 +77,13 @@ async def get_home_page_movies_lists():
     upcoming_movies = get_list_from_tmdb(sch.WantedList.upcoming)
     global_list = concatenate_home_lists(popular_movies, now_playing_movies, upcoming_movies)
     return global_list
+
+
+@router.get("/user_interaction")
+async def get_user_interactions_on_movie(
+    movie_id: int, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)
+):
+    """
+    Retrieve User's interactions for a specific movie (Rating, in lists...)
+    """
+    return get_movie_interactions_with_user(movie_id, user_id, db)
