@@ -15,12 +15,14 @@ router = APIRouter(
 
 
 @router.post("/", response_model=sch.MovieList)
-async def create_movie_list(title: str, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+async def create_movie_list(
+    movie_list: sch.MovieListCreate, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)
+):
     """
     Create a movie list from title for a specific user
     """
 
-    return insert_movie_list_in_database(title, user_id, db)
+    return insert_movie_list_in_database(movie_list.title, user_id, db)
 
 
 @router.get("/", response_model=List[sch.MovieList])

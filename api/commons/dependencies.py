@@ -1,4 +1,5 @@
-from fastapi import Header, HTTPException
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin import auth
 
 from api.database import SessionLocal
@@ -12,8 +13,15 @@ def get_db():
         db.close()
 
 
-def verify_firebase_token(Authorization: str = Header(...)) -> str:
-    id_token = Authorization.replace("Bearer ", "")
+security = HTTPBearer()
+
+
+def verify_firebase_token(authorization: HTTPAuthorizationCredentials = Security(security)) -> str:
+    if authorization is None:
+        raise HTTPException(status_code=401, detail="Authorization header is missing")
+
+    # Get Token from header
+    id_token = authorization.credentials
     try:
         # Verify the ID token while checking if the token is revoked by
         # passing check_revoked=True.
