@@ -9,8 +9,8 @@ class MovieListBase(BaseModel):
     user_id: str
 
 
-class MovieListCreate(MovieListBase):
-    pass
+class MovieListCreate(BaseModel):
+    title: str
 
 
 class MovieList(MovieListBase, TimeModel, UUIdentifiedModel):

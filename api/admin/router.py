@@ -1,8 +1,10 @@
-import os
-
-import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from firebase_admin import auth
+from sqlalchemy.orm import Session
+
+from api.admin.firebase import delete_firebase_user, exchange_custom_token_for_id_token
+from api.commons.dependencies import get_db
+from api.models.user import User
 
 router = APIRouter(
     prefix="/admin",
@@ -10,18 +12,35 @@ router = APIRouter(
 )
 
 
-def exchange_custom_token_for_id_token(custom_token):
-    API_KEY = os.environ.get("FIREBASE_API_KEY")
-    url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key={API_KEY}"
-    data = {"token": custom_token, "returnSecureToken": True}
-    r = requests.post(url, json=data)
-    id_token = r.json().get("idToken")
-
-    return id_token
-
-
 @router.get("/get_custom_token")
 def get_custom_token(user_id: str = "aeANvF2kQoQVUT3GK7biyV1MtFf2"):
+    """Generate a JWT Token used for other API Endpoints.
+
+    Firebase user IDs : \n
+    Dev :
+    * WFZAwoPeBgVzf8FEgrG0YR3BA922
+
+    Stage :
+    * EvX8Oou45UXR5j5M1AaxGrlnnHy2
+    """
     custom_token = auth.create_custom_token(user_id)
     token = exchange_custom_token_for_id_token(custom_token.decode())
     return token
+
+
+@router.delete("/users/")
+async def delete_all_users(db: Session = Depends(get_db)):
+    # Fetch the user
+    users = db.query(User).all()
+
+    if not users:
+        return {"error": "No user"}
+
+    for user in users:
+        # Delete from Firebase
+        delete_firebase_user(user.firebase_id)
+
+        # Delete from PostgreSQL
+        db.delete(user)
+    db.commit()
+    return {"message": "User table emptied"}

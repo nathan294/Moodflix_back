@@ -6,7 +6,9 @@ from sqlalchemy.orm import Session
 
 import api.models as mdl
 import api.user.schemas as sch
+from api.admin.firebase import delete_firebase_user
 from api.commons.dependencies import get_db, verify_firebase_token
+from api.models.user import User
 
 router = APIRouter(
     prefix="/user",
@@ -45,7 +47,8 @@ async def create_user(user: sch.UserCreate, db: Session = Depends(get_db)):
 @router.put("/", response_model=sch.User)
 async def update_user_email(user: sch.UserUpdate, db: Session = Depends(get_db)):
     """
-    Update a user email based on his user_id
+    [DEPRECATED]
+    [To be replaced with the possibility to update user's password based on firebase ID]
     """
     stmt = select(mdl.User).filter_by(user_id=user.user_id)
     db_user = db.scalar(stmt)
@@ -59,15 +62,25 @@ async def update_user_email(user: sch.UserUpdate, db: Session = Depends(get_db))
     return sch.User.model_validate(db_user)
 
 
-@router.delete("/id/{user_id}", response_model=bool)
-async def delete_user(user_id: UUID, db: Session = Depends(get_db)):
+@router.delete("/id/{firebase_id}")
+async def delete_user_using_firebase_id(firebase_id: str, db: Session = Depends(get_db)):
     """
-    Delete a user based on his user_id
+    Delete a user based on his firebase_id
     """
-    # Old sqlalchemy syntaxe, to be modified
-    db.query(mdl.User).filter_by(id=user_id).delete()
+    # Fetch the user
+    user = db.query(User).filter(User.firebase_id == firebase_id).first()
+
+    if not user:
+        return {"error": "User not found"}
+
+    # Delete from Firebase
+    delete_firebase_user(user.firebase_id)
+
+    # Delete from PostgreSQL
+    db.delete(user)
     db.commit()
-    return True
+
+    return {"message": "User deleted"}
 
 
 @router.get("/me")
