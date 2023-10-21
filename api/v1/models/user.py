@@ -16,5 +16,5 @@ class User(TimedObject):
 
     # Relationship to MovieList model
     movie_lists = relationship("MovieList", back_populates="user", cascade="all, delete")
-    rating = relationship("Rating", back_populates="user", cascade="all, delete")
-    wish = relationship("Wish", back_populates="user", cascade="all, delete")
+    ratings = relationship("Rating", back_populates="user", cascade="all, delete")
+    wishes = relationship("Wish", back_populates="user", cascade="all, delete")

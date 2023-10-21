@@ -13,12 +13,12 @@ router = APIRouter(
 
 
 @router.get("/get_custom_token")
-def get_custom_token(user_id: str = "aeANvF2kQoQVUT3GK7biyV1MtFf2"):
+def get_custom_token(user_id: str = "lsQvnap97eS77zaMBGrT3VfkGfq1"):
     """Generate a JWT Token used for other API Endpoints.
 
     Firebase user IDs : \n
     Dev :
-    * WFZAwoPeBgVzf8FEgrG0YR3BA922
+    * lsQvnap97eS77zaMBGrT3VfkGfq1
 
     Stage :
     * EvX8Oou45UXR5j5M1AaxGrlnnHy2

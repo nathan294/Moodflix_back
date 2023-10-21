@@ -14,5 +14,5 @@ class Wish(UUIdentifiedObject, TimedObject):
     __table_args__ = (UniqueConstraint("user_id", "movie_id", name="wish_unique_user_movie"),)
 
     # Relationships
-    user = relationship("User", back_populates="ratings")
-    movie = relationship("Movie", back_populates="ratings")
+    user = relationship("User", back_populates="wishes")
+    movie = relationship("Movie", back_populates="wishes")

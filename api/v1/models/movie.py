@@ -27,5 +27,5 @@ class Movie(TimedObject):
 
     # Relationships
     movie_list_associations = relationship("MovieListAssociation", back_populates="movie")
-    rating = relationship("Rating", back_populates="movie")
-    wish = relationship("Wish", back_populates="movie")
+    ratings = relationship("Rating", back_populates="movie")
+    wishes = relationship("Wish", back_populates="movie")
