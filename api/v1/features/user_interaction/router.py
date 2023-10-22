@@ -1,10 +1,12 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 import api.v1.features.user_interaction.schemas as sch
 from api.v1.commons.dependencies import get_db, verify_firebase_token
-from api.v1.features.user_interaction.rating import rate_movie, unrate_movie
-from api.v1.features.user_interaction.wishlist import add_movie_to_wishlist, remove_movie_from_wishlist
+from api.v1.features.user_interaction.rating import rate_movie_db, select_user_ratings_db, unrate_movie_db
+from api.v1.features.user_interaction.wishlist import delete_movie_from_wishlist_db, insert_movie_into_wishlist_db
 
 router = APIRouter(
     prefix="/user_interaction",
@@ -12,24 +14,32 @@ router = APIRouter(
 )
 
 
+@router.get("/rate", response_model=List[sch.Rating])
+async def get_user_ratings(user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+    """
+    Get all rated movies for a specific user
+    """
+    return select_user_ratings_db(user_id=user_id, db=db)
+
+
 @router.post("/rate", response_model=bool)
-async def user_rate_movie(
+async def rate_movie_by_user(
     rating: sch.RatingCreate, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)
 ):
     """
     Rate a movie for a specific user
     """
-    return rate_movie(movie_id=rating.movie_id, rating=rating.rating, user_id=user_id, db=db)
+    return rate_movie_db(movie_id=rating.movie_id, rating=rating.rating, user_id=user_id, db=db)
 
 
 @router.delete("/rate", response_model=bool)
-async def user_unrate_movie(
+async def unrate_movie_by_user(
     rating: sch.RatingDelete, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)
 ):
     """
     Unrate a movie for a specific user
     """
-    return unrate_movie(movie_id=rating.movie_id, user_id=user_id, db=db)
+    return unrate_movie_db(movie_id=rating.movie_id, user_id=user_id, db=db)
 
 
 @router.post("/wish", response_model=sch.Wish)
@@ -39,7 +49,7 @@ async def add_movie_to_user_wishlist(
     """
     Add a movie to a user's wishlist
     """
-    return add_movie_to_wishlist(movie_id=wish.movie_id, user_id=user_id, db=db)
+    return insert_movie_into_wishlist_db(movie_id=wish.movie_id, user_id=user_id, db=db)
 
 
 @router.delete("/wish", response_model=bool)
@@ -49,4 +59,4 @@ async def remove_movie_from_user_wishlist(
     """
     Remove a movie from a user's wishlist
     """
-    return remove_movie_from_wishlist(movie_id=wish.movie_id, user_id=user_id, db=db)
+    return delete_movie_from_wishlist_db(movie_id=wish.movie_id, user_id=user_id, db=db)

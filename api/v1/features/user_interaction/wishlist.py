@@ -6,7 +6,7 @@ import api.v1.features.user_interaction.schemas as sch
 from api.v1.models.wish import Wish
 
 
-def add_movie_to_wishlist(movie_id: int, user_id: str, db: Session) -> sch.Wish:
+def insert_movie_into_wishlist_db(movie_id: int, user_id: str, db: Session) -> sch.Wish:
     """Add a movie to a specific user's wishlist
 
     Args:
@@ -24,7 +24,7 @@ def add_movie_to_wishlist(movie_id: int, user_id: str, db: Session) -> sch.Wish:
     return sch.Wish.model_validate(db_wish)
 
 
-def remove_movie_from_wishlist(movie_id: int, user_id: str, db: Session) -> bool:
+def delete_movie_from_wishlist_db(movie_id: int, user_id: str, db: Session) -> bool:
     """Remove a movie from a specific user's wishlist
 
     Args:

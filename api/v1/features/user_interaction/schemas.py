@@ -14,6 +14,10 @@ class RatingDelete(BaseModel):
     movie_id: int
 
 
+class Rating(RatingCreate, TimeModel):
+    model_config = ConfigDict(from_attributes=True)
+
+
 class WishBase(BaseModel):
     movie_id: int
 

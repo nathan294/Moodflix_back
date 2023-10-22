@@ -1,11 +1,21 @@
-from sqlalchemy import delete, text
+from typing import List
+
+from sqlalchemy import delete, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from api.v1.models.rating import Rating
+import api.v1.features.user_interaction.schemas as sch
+from api.v1.models import Rating
 
 
-def rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
+def select_user_ratings_db(user_id: str, db: Session) -> List[sch.Rating]:
+    stmt = select(Rating).filter_by(user_id=user_id)
+    db_ratings = db.scalars(stmt).all()
+    pydantic_ratings = [sch.Rating.model_validate(db_rating) for db_rating in db_ratings]
+    return pydantic_ratings
+
+
+def rate_movie_db(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
     """Movie rating by a specific user
 
     Args:
@@ -26,7 +36,7 @@ def rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
     return True
 
 
-def unrate_movie(movie_id: int, user_id: str, db: Session) -> bool:
+def unrate_movie_db(movie_id: int, user_id: str, db: Session) -> bool:
     """Unrate a movie by a specific user
 
     Args:
