@@ -15,7 +15,6 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.v1.json",
-    prefix="/api",
 )
 
 
@@ -32,7 +31,7 @@ def startup_event() -> None:
 # register_exception_handlers(app)
 
 # Include V1 Router
-app.include_router(v1_router)
+app.include_router(v1_router, prefix="/api")
 
 
 @app.get("/")
