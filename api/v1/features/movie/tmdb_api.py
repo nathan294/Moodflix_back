@@ -17,7 +17,7 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
     all_movies_data = []
 
     for page in [1, 2]:
-        url = f"https://api.v1.themoviedb.org/3/search/multi?query={title}&api_key={api_key}&include_adult=false&language=fr-FR&page={page}"
+        url = f"https://api.themoviedb.org/3/search/multi?query={title}&api_key={api_key}&include_adult=false&language=fr-FR&page={page}"
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_content = response.content.decode("utf-8")  # Explicitly decode as UTF-8
@@ -78,7 +78,7 @@ def get_genres_from_tmdb(media_type: str) -> List[Dict]:
     Get genres id & names from TMDB API
     """
     api_key = "377e1f30f7462ca340230ce50a56d71b"
-    url = f"https://api.v1.themoviedb.org/3/genre/{media_type}/list?api_key={api_key}&language=fr-FR"
+    url = f"https://api.themoviedb.org/3/genre/{media_type}/list?api_key={api_key}&language=fr-FR"
     headers = {"accept": "application/json"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
@@ -104,14 +104,15 @@ def get_list_from_tmdb(wanted_list: sch.WantedList) -> List[sch.MovieCreate]:
     all_movies_data = []
 
     for page in [1, 2]:
-        url = f"https://api.v1.themoviedb.org/3/movie/{wanted_list.value}?api_key={api_key}&include_adult=false&language=fr-FR&page={page}"
+        url = f"https://api.themoviedb.org/3/movie/{wanted_list.value}?api_key={api_key}&include_adult=false&language=fr-FR&page={page}"
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             response_content = response.content.decode("utf-8")  # Explicitly decode as UTF-8
             data = json.loads(response_content)
             movies_data = data.get("results", [])
             all_movies_data.extend(movies_data)  # Concatenate the results
-
+        else:
+            raise HTTPException(status_code=response.status_code, detail=response.reason)
         # Create a list of MovieCreate objects and set release_year field
         movies = []
         for movie_data in all_movies_data:
