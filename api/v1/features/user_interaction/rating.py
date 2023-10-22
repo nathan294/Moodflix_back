@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -17,9 +18,7 @@ def user_rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bo
     insert_stmt = insert(Rating)
     upsert_stmt = insert_stmt.on_conflict_do_update(
         index_elements=["user_id", "movie_id"],  # conflict target
-        set_=dict(
-            rating=insert_stmt.excluded.rating,
-        ),
+        set_=dict(rating=insert_stmt.excluded.rating, updated_at=text("CURRENT_TIMESTAMP")),
     )
     # Execute the statement with the genres values
     db.execute(upsert_stmt, db_rating_dict)
