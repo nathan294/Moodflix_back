@@ -1,4 +1,8 @@
-from pydantic import BaseModel
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
+
+from api.v1.commons.schemas_commons import TimeModel
 
 
 class RatingCreate(BaseModel):
@@ -6,5 +10,15 @@ class RatingCreate(BaseModel):
     rating: int
 
 
-class WishCreate(BaseModel):
+class RatingDelete(BaseModel):
     movie_id: int
+
+
+class WishBase(BaseModel):
+    movie_id: int
+
+
+class Wish(WishBase, TimeModel):
+    user_id: str
+    id: UUID
+    model_config = ConfigDict(from_attributes=True)

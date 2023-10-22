@@ -1,11 +1,11 @@
-from sqlalchemy import text
+from sqlalchemy import delete, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from api.v1.models.rating import Rating
 
 
-def user_rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
+def rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
     """Movie rating by a specific user
 
     Args:
@@ -22,5 +22,19 @@ def user_rate_movie(movie_id: int, rating: int, user_id: str, db: Session) -> bo
     )
     # Execute the statement with the genres values
     db.execute(upsert_stmt, db_rating_dict)
+    db.commit()
+    return True
+
+
+def unrate_movie(movie_id: int, user_id: str, db: Session) -> bool:
+    """Unrate a movie by a specific user
+
+    Args:
+        movie_id (int): id of the movie
+        user_id (str): user firebase id
+        db (Session): sqlalchemy Session object
+    """
+    stmt = delete(Rating).filter_by(user_id=user_id, movie_id=movie_id)
+    db.execute(stmt)
     db.commit()
     return True
