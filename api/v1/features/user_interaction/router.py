@@ -19,11 +19,13 @@ router = APIRouter(
 
 
 @router.get("/rate", response_model=List[sch.Rating])
-async def get_user_ratings(user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+async def get_user_ratings(
+    user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db), skip: int = 0, limit: int = 10
+):
     """
     Get all rated movies for a specific user
     """
-    return select_user_ratings_db(user_id=user_id, db=db)
+    return select_user_ratings_db(user_id=user_id, db=db, skip=skip, limit=limit)
 
 
 @router.post("/rate", response_model=bool)
@@ -47,11 +49,13 @@ async def unrate_movie_by_user(
 
 
 @router.get("/wish", response_model=List[sch.Wish])
-async def get_user_wishes(user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+async def get_user_wishes(
+    user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db), skip: int = 0, limit: int = 10
+):
     """
     Get all rated movies for a specific user
     """
-    return select_user_wishes_db(user_id=user_id, db=db)
+    return select_user_wishes_db(user_id=user_id, db=db, skip=skip, limit=limit)
 
 
 @router.post("/wish", response_model=sch.Wish)

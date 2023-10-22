@@ -8,8 +8,8 @@ import api.v1.features.user_interaction.schemas as sch
 from api.v1.models import Rating
 
 
-def select_user_ratings_db(user_id: str, db: Session) -> List[sch.Rating]:
-    stmt = select(Rating).filter_by(user_id=user_id)
+def select_user_ratings_db(user_id: str, db: Session, skip: int, limit: int) -> List[sch.Rating]:
+    stmt = select(Rating).filter_by(user_id=user_id).offset(skip).limit(limit)
     db_ratings = db.scalars(stmt).all()
     pydantic_ratings = [sch.Rating.model_validate(db_rating) for db_rating in db_ratings]
     return pydantic_ratings

@@ -8,8 +8,8 @@ import api.v1.features.user_interaction.schemas as sch
 from api.v1.models import Wish
 
 
-def select_user_wishes_db(user_id: str, db: Session) -> List[sch.Wish]:
-    stmt = select(Wish).filter_by(user_id=user_id)
+def select_user_wishes_db(user_id: str, db: Session, skip: int, limit: int) -> List[sch.Wish]:
+    stmt = select(Wish).filter_by(user_id=user_id).offset(skip).limit(limit)
     db_wishes = db.scalars(stmt).all()
     pydantic_wishes = [sch.Wish.model_validate(db_wish) for db_wish in db_wishes]
     return pydantic_wishes
