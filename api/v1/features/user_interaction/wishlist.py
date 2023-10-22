@@ -1,9 +1,18 @@
+from typing import List
+
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 import api.v1.features.user_interaction.schemas as sch
-from api.v1.models.wish import Wish
+from api.v1.models import Wish
+
+
+def select_user_wishes_db(user_id: str, db: Session) -> List[sch.Wish]:
+    stmt = select(Wish).filter_by(user_id=user_id)
+    db_wishes = db.scalars(stmt).all()
+    pydantic_wishes = [sch.Wish.model_validate(db_wish) for db_wish in db_wishes]
+    return pydantic_wishes
 
 
 def insert_movie_into_wishlist_db(movie_id: int, user_id: str, db: Session) -> sch.Wish:

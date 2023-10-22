@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 import api.v1.features.user_interaction.schemas as sch
 from api.v1.commons.dependencies import get_db, verify_firebase_token
 from api.v1.features.user_interaction.rating import rate_movie_db, select_user_ratings_db, unrate_movie_db
-from api.v1.features.user_interaction.wishlist import delete_movie_from_wishlist_db, insert_movie_into_wishlist_db
+from api.v1.features.user_interaction.wishlist import (
+    delete_movie_from_wishlist_db,
+    insert_movie_into_wishlist_db,
+    select_user_wishes_db,
+)
 
 router = APIRouter(
     prefix="/user_interaction",
@@ -40,6 +44,14 @@ async def unrate_movie_by_user(
     Unrate a movie for a specific user
     """
     return unrate_movie_db(movie_id=rating.movie_id, user_id=user_id, db=db)
+
+
+@router.get("/wish", response_model=List[sch.Wish])
+async def get_user_wishes(user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)):
+    """
+    Get all rated movies for a specific user
+    """
+    return select_user_wishes_db(user_id=user_id, db=db)
 
 
 @router.post("/wish", response_model=sch.Wish)
