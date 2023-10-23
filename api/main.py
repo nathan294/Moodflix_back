@@ -2,12 +2,7 @@ import firebase_admin
 from fastapi import FastAPI
 from firebase_admin import credentials
 
-from api.admin.router import router as admin_router
-from api.movie.router import router as movie_router
-from api.movie_list.router import router as movie_list_router
-
-# Routers
-from api.user.router import router as user_router
+from api.v1.router import router as v1_router
 
 description = """
 _Description in progress_ 🚀
@@ -19,7 +14,7 @@ app = FastAPI(
     version="0.1.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
+    openapi_url="/api/openapi.v1.json",
 )
 
 
@@ -35,10 +30,8 @@ def startup_event() -> None:
 # register_shutdown_event(app)
 # register_exception_handlers(app)
 
-app.include_router(admin_router)
-app.include_router(user_router, prefix="/api")
-app.include_router(movie_router, prefix="/api")
-app.include_router(movie_list_router, prefix="/api")
+# Include V1 Router
+app.include_router(v1_router, prefix="/api")
 
 
 @app.get("/")
