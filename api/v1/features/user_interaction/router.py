@@ -17,6 +17,10 @@ router = APIRouter(
     tags=["User Interaction"],
 )
 
+############
+############   RATE
+############
+
 
 @router.get("/rate", response_model=List[sch.Rating])
 async def get_user_ratings(
@@ -46,6 +50,11 @@ async def unrate_movie_by_user(
     Unrate a movie for a specific user
     """
     return unrate_movie_db(movie_id=rating.movie_id, user_id=user_id, db=db)
+
+
+############
+############   WISHLIST
+############
 
 
 @router.get("/wish", response_model=List[sch.Wish])
