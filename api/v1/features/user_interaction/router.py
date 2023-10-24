@@ -57,7 +57,7 @@ async def unrate_movie_by_user(
 ############
 
 
-@router.get("/wish", response_model=List[sch.Wish])
+@router.get("/wish", response_model=List[sch.WishedMovie])
 async def get_user_wishes(
     user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db), skip: int = 0, limit: int = 10
 ):
