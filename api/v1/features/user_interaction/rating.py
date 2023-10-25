@@ -1,18 +1,40 @@
 from typing import List
 
-from sqlalchemy import delete, select, text
+from sqlalchemy import delete, desc, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 import api.v1.features.user_interaction.schemas as sch
 from api.v1.models import Rating
+from api.v1.models.movie import Movie
 
 
-def select_user_ratings_db(user_id: str, db: Session, skip: int, limit: int) -> List[sch.Rating]:
-    stmt = select(Rating).filter_by(user_id=user_id).offset(skip).limit(limit)
-    db_ratings = db.scalars(stmt).all()
-    pydantic_ratings = [sch.Rating.model_validate(db_rating) for db_rating in db_ratings]
-    return pydantic_ratings
+def select_user_ratings_db(user_id: str, db: Session, skip: int, limit: int) -> List[sch.RatedMovie]:
+    # Create a CTE that selects movie_ids from the Wish table, sorted by created_at
+    cte = select(Rating.movie_id, Rating.rating, Rating.updated_at).filter_by(user_id=user_id).cte("sorted_wishes")
+
+    # Main query that joins the CTE and Movie table to fetch the sorted movies
+    stmt = (
+        select(Movie, cte.c.rating.label("user_rating"))
+        .join(cte, cte.c.movie_id == Movie.id)
+        .order_by(desc(cte.c.updated_at))
+        .offset(skip)
+        .limit(limit)
+    )
+
+    # Execute the statement and fetch results
+    db_movies = db.execute(stmt).all()
+
+    # Convert to Pydantic models
+    pydantic_movies = []
+    for db_movie, user_rating in db_movies:
+        movie_dict = db_movie.__dict__
+        movie_dict["user_rating"] = user_rating  # Replace the "rating" field
+        movie_dict["movie_id"] = db_movie.id
+        pydantic_movie = sch.RatedMovie.model_validate(movie_dict)
+        pydantic_movies.append(pydantic_movie)
+
+    return pydantic_movies
 
 
 def rate_movie_db(movie_id: int, rating: int, user_id: str, db: Session) -> bool:
