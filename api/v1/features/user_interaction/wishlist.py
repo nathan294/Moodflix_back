@@ -11,10 +11,12 @@ from api.v1.models.movie import Movie
 
 def select_user_wishes_db(user_id: str, db: Session, skip: int, limit: int) -> List[sch.WishedMovie]:
     # Create a CTE that selects movie_ids from the Wish table, sorted by created_at
-    cte = select(Wish.movie_id).filter_by(user_id=user_id).order_by(desc(Wish.created_at)).cte("sorted_wishes")
+    cte = select(Wish.movie_id, Wish.created_at).filter_by(user_id=user_id).cte("sorted_wishes")
 
     # Main query that joins the CTE and Movie table to fetch the sorted movies
-    stmt = select(Movie).join(cte, cte.c.movie_id == Movie.id).offset(skip).limit(limit)
+    stmt = (
+        select(Movie).join(cte, cte.c.movie_id == Movie.id).order_by(desc(cte.c.created_at)).offset(skip).limit(limit)
+    )
 
     # Execute the statement and fetch results
     db_movies = db.scalars(stmt).all()
