@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
-from api.commons.schemas_commons import TimeModel, UUIdentifiedModel
+from api.v1.commons.schemas_commons import TimeModel, UUIdentifiedModel
 
 
 class UserBase(BaseModel):

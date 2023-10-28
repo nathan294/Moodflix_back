@@ -3,12 +3,12 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import api.movie.schemas as sch
-from api.commons.dependencies import get_db
-from api.movie.data_processing import concatenate_genres, concatenate_home_lists
-from api.movie.get_database import get_genre_names_from_database
-from api.movie.post_database import insert_genres_in_database, insert_movies_in_database
-from api.movie.tmdb_api import get_genres_from_tmdb, get_list_from_tmdb, search_movie_in_tmdb_api
+import api.v1.features.movie.schemas as sch
+from api.v1.commons.dependencies import get_db, verify_firebase_token
+from api.v1.features.movie.data_processing import concatenate_genres, concatenate_home_lists
+from api.v1.features.movie.get_database import get_movie_details_db
+from api.v1.features.movie.post_database import insert_genres_in_database, insert_movies_in_database
+from api.v1.features.movie.tmdb_api import get_genres_from_tmdb, get_list_from_tmdb, search_movie_in_tmdb_api
 
 router = APIRouter(
     prefix="/movie",
@@ -44,14 +44,6 @@ async def sync_movie_genres(db: Session = Depends(get_db)):
     return insert_genres_in_database(concatenated_genres, db)
 
 
-@router.post("/get_genre_name", response_model=List[str])
-async def get_genre_names(genre_ids: sch.GenreIds, db: Session = Depends(get_db)):
-    """
-    Retrieve movie genre names from database
-    """
-    return get_genre_names_from_database(genre_ids=genre_ids, db=db)
-
-
 @router.get("/movies_list", response_model=List[sch.MovieCreate])
 async def get_movies_list(wanted_list: sch.WantedList):
     """
@@ -77,3 +69,18 @@ async def get_home_page_movies_lists():
     upcoming_movies = get_list_from_tmdb(sch.WantedList.upcoming)
     global_list = concatenate_home_lists(popular_movies, now_playing_movies, upcoming_movies)
     return global_list
+
+
+@router.get("/details/{movie_id}", response_model=sch.MovieDetails)
+async def get_movie_details(
+    movie_id: int, user_id: str = Depends(verify_firebase_token), db: Session = Depends(get_db)
+):
+    """
+    Retrieve movie details from database.
+    It retrieves movie genre names and user interactions with the movie (in wishlist, rated)
+    """
+    return get_movie_details_db(
+        movie_id=movie_id,
+        user_id=user_id,
+        db=db,
+    )

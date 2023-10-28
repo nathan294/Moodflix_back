@@ -1,9 +1,10 @@
 from datetime import date
 
 from sqlalchemy import ARRAY, Column, Date, Double, Enum, Integer, String
+from sqlalchemy.orm import relationship
 
-from api.models.commons import TimedObject
-from api.movie.schemas import MovieType
+from api.v1.commons.model_commons import TimedObject
+from api.v1.features.movie.schemas import MovieType
 
 
 class Movie(TimedObject):
@@ -23,3 +24,8 @@ class Movie(TimedObject):
     popularity: float = Column(Double, nullable=True)
     vote_average: float = Column(Double, nullable=True)
     vote_count: int = Column(Integer, nullable=True)
+
+    # Relationships
+    movie_list_associations = relationship("MovieListAssociation", back_populates="movie")
+    ratings = relationship("Rating", back_populates="movie")
+    wishes = relationship("Wish", back_populates="movie")

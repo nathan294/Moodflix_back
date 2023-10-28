@@ -24,6 +24,7 @@
                 "DB_PORT": "5432",
                 "DB_USER": "postgres",
                 "DB_PASS": "1234",
+                "FIREBASE_API_KEY": "AIzaSyB8IsQKIjB66MA60tofebSKgccz7eRyPYM"
             },
             "jinja": true,
             "justMyCode": true

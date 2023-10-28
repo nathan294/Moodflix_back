@@ -3,9 +3,9 @@ from typing import List
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-import api.movie.schemas as sch
-from api.models.movie import Movie
-from api.models.movie_genre import MovieGenre
+import api.v1.features.movie.schemas as sch
+from api.v1.models.movie import Movie
+from api.v1.models.movie_genre import MovieGenre
 
 
 def insert_movies_in_database(movies: List[sch.MovieCreate], db: Session) -> bool:

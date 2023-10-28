@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-import api.movie.schemas as sch
+import api.v1.features.movie.schemas as sch
 
 
 def concatenate_genres(movie_genres: List[Dict], tv_genres: List[Dict]) -> List[Dict]:

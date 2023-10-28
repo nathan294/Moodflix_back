@@ -2,9 +2,7 @@ from datetime import date
 from enum import Enum
 from typing import List
 
-from pydantic import BaseModel, ConfigDict
-
-from api.commons.schemas_commons import TimeModel
+from pydantic import BaseModel
 
 
 class MovieType(Enum):
@@ -36,18 +34,18 @@ class MovieCreate(BaseModel):
     vote_count: int | None
 
 
-class MovieGenre(TimeModel):
-    id: int
-    name: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class GenreIds(BaseModel):
-    ids: List[int] | None
-
-
 class HomePageMovies(BaseModel):
     popular: List[MovieCreate]
     now_playing: List[MovieCreate]
     upcoming: List[MovieCreate]
+
+
+class GetMovieDetails(BaseModel):
+    # genre_ids: List[int] | None
+    movie_id: int
+
+
+class MovieDetails(BaseModel):
+    genre_names: List[str]
+    is_wished: bool
+    rate: int | None = None

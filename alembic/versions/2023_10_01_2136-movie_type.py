@@ -10,7 +10,7 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 
 from alembic import op
-from api.movie.schemas import MovieType
+from api.v1.features.movie.schemas import MovieType
 
 # revision identifiers, used by Alembic.
 revision: str = "78ee9804cef5"

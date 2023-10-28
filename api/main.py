@@ -1,37 +1,39 @@
+import firebase_admin
 from fastapi import FastAPI
+from firebase_admin import credentials
 
-from api.database import engine
-from api.models import Base
-from api.movie.router import router as movie_router
-
-# Routers
-from api.user.router import router as user_router
-
-# from api.settings import settings
-
+from api.v1.router import router as v1_router
 
 description = """
 _Description in progress_ 🚀
 """
 
-app = FastAPI(title="API de Moodflix", description=description)
-app.include_router(user_router)
-app.include_router(movie_router)
-Base.metadata.create_all(bind=engine)
+app = FastAPI(
+    title="API de Moodflix",
+    description=description,
+    version="0.1.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.v1.json",
+)
+
+
+@app.on_event("startup")
+def startup_event() -> None:
+    cred = credentials.Certificate("/app/firebase_credentials.json")
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+
+
+# Adds startup and shutdown events.
+# register_startup_event(app)
+# register_shutdown_event(app)
+# register_exception_handlers(app)
+
+# Include V1 Router
+app.include_router(v1_router, prefix="/api")
 
 
 @app.get("/")
 def healthcheck():
     return "All good!"
-
-
-# Dangereux
-# @app.get("/route_hyper_secure")
-# def tester_la_securite():
-#     return {
-#         "DB_HOST": settings.DB_HOST,
-#         "DB_USER": settings.DB_USER,
-#         "DB_PASS": settings.DB_PASS,
-#         "DB_NAME": settings.DB_NAME,
-#         "DB_PORT": settings.DB_PORT,
-#     }

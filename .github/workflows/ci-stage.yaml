@@ -10,14 +10,14 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   VM_HOST: ${{ secrets.VM_HOST }}
-  GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
-  GHCR_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
   DB_USER: ${{ secrets.DB_USER_STG }}
   DB_PASS: ${{ secrets.DB_PASS_STG }}
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_PORT: ${{ secrets.DB_PORT }}
   DB_NAME: ${{ secrets.DB_NAME_STG }}
   APP_PORT: ${{ secrets.APP_PORT_STG }}
+  FIREBASE_API_KEY: ${{ secrets.FIREBASE_STG_API_KEY }}
+  FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_STG_CREDENTIALS }}
 
 jobs:
   build-and-push-image:
@@ -92,25 +92,28 @@ jobs:
             sudo docker rm moodflix_alembic_stage || true
           fi"
 
+      - name: Create Firebase Credentials JSON
+        run: echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+
       - name: Create .env file
         run: |
-          echo "DB_USER=${{ secrets.DB_USER_STG }}" > .env
-          echo "DB_PASS=${{ secrets.DB_PASS_STG }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME_STG }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "APP_PORT=${{ secrets.APP_PORT_STG }}" >> .env
+          echo "DB_USER=$DB_USER" > .env
+          echo "DB_PASS=$DB_PASS" >> .env
+          echo "DB_HOST=$DB_HOST" >> .env
+          echo "DB_NAME=$DB_NAME" >> .env
+          echo "DB_PORT=$DB_PORT" >> .env
+          echo "APP_PORT=$APP_PORT" >> .env
+          echo "FIREBASE_API_KEY=$FIREBASE_API_KEY" >> .env
 
       - name: Copy .env to VM
         run: |
           scp .env VM:~/moodflix_stage.env
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          scp firebase_credentials.json VM:~/firebase_credentials_stage.json
 
       - name: Run migrations
         run: |
-          ssh VM "sudo docker run --env-file moodflix_stage.env --name moodflix_alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
+          ssh VM "sudo docker run --env-file moodflix_stage.env -v ~/firebase_credentials_stage.json:/app/firebase_credentials.json --name moodflix_alembic_stage ghcr.io/nathan294/moodflix_back:stage alembic upgrade head"
 
       - name: Run Docker with the image we just pulled
         run: |
-          ssh VM "sudo docker run -p ${{ secrets.APP_PORT_STG }}:${{ secrets.APP_PORT_STG }} --name moodflix_back_container_stage --env-file moodflix_stage.env -d ghcr.io/nathan294/moodflix_back:stage uvicorn api.main:app --host 0.0.0.0 --port ${{ secrets.APP_PORT_STG }}"
+          ssh VM "sudo docker run -p $APP_PORT:$APP_PORT --name moodflix_back_container_stage --env-file moodflix_stage.env -v ~/firebase_credentials_stage.json:/app/firebase_credentials.json -d ghcr.io/nathan294/moodflix_back:stage uvicorn api.main:app --host 0.0.0.0 --port $APP_PORT"

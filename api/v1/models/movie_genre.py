@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from api.models.commons import TimedObject
+from api.v1.commons.model_commons import TimedObject
 
 
 class MovieGenre(TimedObject):
