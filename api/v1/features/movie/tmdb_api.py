@@ -7,7 +7,7 @@ from fastapi import HTTPException
 import api.v1.features.movie.schemas as sch
 
 
-def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
+def search_movie_in_tmdb_api(title: str) -> List[sch.Movie]:
     """
     Search for movie in TMDB API, return a list of movies
     """
@@ -25,7 +25,7 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
             movies_data = data.get("results", [])
             all_movies_data.extend(movies_data)  # Concatenate the results
 
-        # Create a list of MovieCreate objects and set release_year field
+        # Create a list of Movie objects and set release_year field
         movies = []
         for movie_data in all_movies_data:
             try:
@@ -45,7 +45,7 @@ def search_movie_in_tmdb_api(title: str) -> List[sch.MovieCreate]:
 
                 # Create a pydantic Movie from the response
                 if title is not None and release_date is not None:
-                    movie = sch.MovieCreate(
+                    movie = sch.Movie(
                         id=movie_data.get("id"),
                         title=title,
                         type=media_type,
@@ -90,7 +90,7 @@ def get_genres_from_tmdb(media_type: str) -> List[Dict]:
         return []
 
 
-def get_list_from_tmdb(wanted_list: sch.WantedList) -> List[sch.MovieCreate]:
+def get_list_from_tmdb(wanted_list: sch.WantedList) -> List[sch.Movie]:
     """
     Get list from TMDB API
     * Now Playing : To get movies in theaters, use _now\_playing_
@@ -113,7 +113,7 @@ def get_list_from_tmdb(wanted_list: sch.WantedList) -> List[sch.MovieCreate]:
             all_movies_data.extend(movies_data)  # Concatenate the results
         else:
             raise HTTPException(status_code=response.status_code, detail=response.reason)
-        # Create a list of MovieCreate objects and set release_year field
+        # Create a list of Movie objects and set release_year field
         movies = []
         for movie_data in all_movies_data:
             try:
@@ -130,7 +130,7 @@ def get_list_from_tmdb(wanted_list: sch.WantedList) -> List[sch.MovieCreate]:
 
                 # Create a pydantic Movie from the response
                 if title is not None and release_date is not None:
-                    movie = sch.MovieCreate(
+                    movie = sch.Movie(
                         id=movie_data.get("id"),
                         title=title,
                         type="movie",  # Only movies here

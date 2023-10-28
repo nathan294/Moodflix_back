@@ -29,9 +29,9 @@ class Wish(WishBase, TimeModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class WishedMovie(movie_sch.MovieCreate):
+class WishedMovie(movie_sch.Movie):
     user_wish: bool = True
 
 
-class RatedMovie(movie_sch.MovieCreate):
+class RatedMovie(movie_sch.Movie):
     user_rating: int
