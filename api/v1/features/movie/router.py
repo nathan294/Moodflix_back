@@ -17,14 +17,14 @@ router = APIRouter(
 
 
 @router.post("/", response_model=bool)
-async def bulk_create_movie(movies: List[sch.MovieCreate], db: Session = Depends(get_db)):
+async def bulk_create_movie(movies: List[sch.Movie], db: Session = Depends(get_db)):
     """
-    Add movies in Moodflix database based on MovieCreate schema (movie fields coming from TMDB)
+    Add movies in Moodflix database based on Movie schema (movie fields coming from TMDB)
     """
     return insert_movies_in_database(movies, db)
 
 
-@router.get("/", response_model=List[sch.MovieCreate])
+@router.get("/", response_model=List[sch.Movie])
 async def search_movie(title: str):
     """
     Get list of closest movies, by movie title
@@ -44,7 +44,7 @@ async def sync_movie_genres(db: Session = Depends(get_db)):
     return insert_genres_in_database(concatenated_genres, db)
 
 
-@router.get("/movies_list", response_model=List[sch.MovieCreate])
+@router.get("/movies_list", response_model=List[sch.Movie])
 async def get_movies_list(wanted_list: sch.WantedList):
     """
     Get list from TMDB API

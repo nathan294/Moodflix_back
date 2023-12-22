@@ -8,7 +8,7 @@ from api.v1.models.movie import Movie
 from api.v1.models.movie_genre import MovieGenre
 
 
-def insert_movies_in_database(movies: List[sch.MovieCreate], db: Session) -> bool:
+def insert_movies_in_database(movies: List[sch.Movie], db: Session) -> bool:
     """
     Insert movies into database
     """

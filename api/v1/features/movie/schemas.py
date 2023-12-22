@@ -17,7 +17,7 @@ class WantedList(Enum):
     upcoming = "upcoming"
 
 
-class MovieCreate(BaseModel):
+class Movie(BaseModel):
     id: int
     type: MovieType
     title: str
@@ -35,9 +35,9 @@ class MovieCreate(BaseModel):
 
 
 class HomePageMovies(BaseModel):
-    popular: List[MovieCreate]
-    now_playing: List[MovieCreate]
-    upcoming: List[MovieCreate]
+    popular: List[Movie]
+    now_playing: List[Movie]
+    upcoming: List[Movie]
 
 
 class GetMovieDetails(BaseModel):
