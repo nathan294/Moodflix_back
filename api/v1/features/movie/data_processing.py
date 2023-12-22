@@ -16,8 +16,8 @@ def concatenate_genres(movie_genres: List[Dict], tv_genres: List[Dict]) -> List[
 
 
 def concatenate_home_lists(
-    popular_movies: List[sch.MovieCreate],
-    now_playing_movies: List[sch.MovieCreate],
-    upcoming_movies: List[sch.MovieCreate],
+    popular_movies: List[sch.Movie],
+    now_playing_movies: List[sch.Movie],
+    upcoming_movies: List[sch.Movie],
 ):
     return {"popular": popular_movies, "now_playing": now_playing_movies, "upcoming": upcoming_movies}
